@@ -10,9 +10,9 @@ WebSocketsClient webSocket;
 WiFiClient client;
 
 const int ledPin = 2;
-#define MyApiKey "027a4817-08eb-4864-9f62-e801fc0ee0a7" // TODO: Change to your sinric API Key. Your API Key is displayed on sinric.com dashboard
-#define MySSID "Dunder Mifflin Paper" // TODO: Change to your Wifi network SSID
-#define MyWifiPassword "54321111" // TODO: Change to your Wifi network password
+#define MyApiKey "027a4817-08eb-4864-9f62-e801fc0ee0a7"
+#define MySSID "Dunder Mifflin Paper"
+#define MyWifiPassword "54321111"
 
 #define HEARTBEAT_INTERVAL 300000 // 5 Minutes 
 
@@ -21,13 +21,13 @@ bool isConnected = false;
 
  
 void turnOn(String deviceId) {
-  if (deviceId == "5e1fad540c04793a3a7f9e20") // Device ID of first device
+  if (deviceId == "5e1fad540c04793a3a7f9e20")
   {  
     Serial.print("Turn on device id: ");
     Serial.println(deviceId);
     digitalWrite (ledPin, HIGH);
   } 
-  else if (deviceId == "5e1fad540c04793a3a7f9e20") // Device ID of second device
+  else if (deviceId == "5e1fad540c04793a3a7f9e20") 
   { 
     Serial.print("Turn on device id: ");
     Serial.println(deviceId);
@@ -39,13 +39,13 @@ void turnOn(String deviceId) {
 }
 
 void turnOff(String deviceId) {
-   if (deviceId == "5e1fad540c04793a3a7f9e20") // Device ID of first device
+   if (deviceId == "5e1fad540c04793a3a7f9e20")
    {  
      Serial.print("Turn off Device ID: ");
      Serial.println(deviceId);
      digitalWrite (ledPin, LOW);
    }
-   else if (deviceId == "5e1fad540c04793a3a7f9e20") // Device ID of second device
+   else if (deviceId == "5e1fad540c04793a3a7f9e20")
    { 
      Serial.print("Turn off Device ID: ");
      Serial.println(deviceId);
@@ -70,12 +70,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       break;
     case WStype_TEXT: {
         Serial.printf("[WSc] get text: %s\n", payload);
-        // Example payloads
-
-        // For Switch  types
-        // {"deviceId":"xxx","action":"action.devices.commands.OnOff","value":{"on":true}} // https://developers.google.com/actions/smarthome/traits/onoff
-        // {"deviceId":"xxx","action":"action.devices.commands.OnOff","value":{"on":false}}
-
+      
 #if ARDUINOJSON_VERSION_MAJOR == 5
         DynamicJsonBuffer jsonBuffer;
         JsonObject& json = jsonBuffer.parseObject((char*)payload);
@@ -97,9 +92,20 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                 turnOff(deviceId);
             }
         }
+        else if(action == "action.devices.commands.BrightnessAbsolute"){
+          String brightnessLevel = json ["value"]["brightness"];
+          Serial.println(brightnessLevel);
+        }
+        else if(action == "action.devices.commands.ColorAbsolute"){
+          String brightnessLevel = json ["value"]["color"]["spectrumRGB"];
+          
+        }
         else if (action == "test") {
             Serial.println("[WSc] received test command from sinric.com");
         }
+       
+
+        
       }
       break;
     case WStype_BIN:
