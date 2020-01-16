@@ -95,10 +95,12 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
         else if(action == "action.devices.commands.BrightnessAbsolute"){
           String brightnessLevel = json ["value"]["brightness"];
           Serial.println(brightnessLevel);
+          turnOn(deviceId);
         }
         else if(action == "action.devices.commands.ColorAbsolute"){
           String color = json ["value"]["color"]["spectrumRGB"];
           Serial.println(color);
+          turnOn(deviceId);
         }
         else if (action == "test") {
             Serial.println("[WSc] received test command from sinric.com");
@@ -136,22 +138,18 @@ void setup() {
     Serial.println(WiFi.localIP());
   }
 
-  // server address, port and URL
-  webSocket.begin("iot.sinric.com", 80, "/"); //"iot.sinric.com", 80
+  webSocket.begin("iot.sinric.com", 80, "/");
 
-  // event handler
   webSocket.onEvent(webSocketEvent);
   webSocket.setAuthorization("apikey", MyApiKey);
   
-  // try again every 5000ms if connection has failed
-  webSocket.setReconnectInterval(5000);   // If you see 'class WebSocketsClient' has no member named 'setReconnectInterval' error update arduinoWebSockets
+  webSocket.setReconnectInterval(5000);
 }
 
 void loop() {
   webSocket.loop();  
   if(isConnected) {
       uint64_t now = millis(); 
-      // Send heartbeat in order to avoid disconnections during ISP resetting IPs over night. Thanks @MacSass
       if((now - heartbeatTimestamp) > HEARTBEAT_INTERVAL) {
           heartbeatTimestamp = now;
           webSocket.sendTXT("H");          
