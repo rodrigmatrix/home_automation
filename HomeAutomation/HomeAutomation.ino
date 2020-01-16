@@ -97,14 +97,12 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
           Serial.println(brightnessLevel);
         }
         else if(action == "action.devices.commands.ColorAbsolute"){
-          String brightnessLevel = json ["value"]["color"]["spectrumRGB"];
-          
+          String color = json ["value"]["color"]["spectrumRGB"];
+          Serial.println(color);
         }
         else if (action == "test") {
             Serial.println("[WSc] received test command from sinric.com");
         }
-       
-
         
       }
       break;
